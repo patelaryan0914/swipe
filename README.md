@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Swipe Internship Assignment — AI-Powered Interview Assistant
 
-## Getting Started
+**Made by Aryan**
 
-First, run the development server:
+## Project Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+This is a crisp React/Next.js app for an AI-powered interview assistant.  
+It provides two tabs: **Interviewee (chat)** and **Interviewer (dashboard)**, both kept in sync.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Interviewee (Chat)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Upload resume (PDF required, DOCX optional).
+- Extract Name, Email, Phone from resume.
+- If any field is missing, chatbot collects it before starting.
+- Timed interview: AI generates questions and judges answers.
+- 6 questions: 2 Easy (20s), 2 Medium (60s), 2 Hard (120s).
+- Auto-submit when timer runs out.
+- Final score and AI summary after interview.
 
-## Learn More
+### Interviewer (Dashboard)
 
-To learn more about Next.js, take a look at the following resources:
+- List of candidates ordered by score.
+- View each candidate's chat history, profile, and final AI summary.
+- Search and sort candidates.
+- Detailed view: all questions, answers, and AI scores.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Persistence
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- All data (timers, answers, progress) is saved locally.
+- Closing/reopening restores progress.
+- "Welcome Back" modal for unfinished sessions.
 
-## Deploy on Vercel
+### Tech Stack
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- React + Redux Toolkit (with persistence)
+- Next.js
+- shadcn/ui (modern UI library)
+- Google Generative AI (for questions & scoring)
+- Friendly error handling (invalid files, missing fields)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## Assignment Checklist
+
+- [x] Resume upload (PDF/DOCX)
+- [x] Extract Name, Email, Phone
+- [x] Chatbot prompts for missing fields
+- [x] Timed interview (AI questions, auto-submit)
+- [x] 6 questions (2 Easy, 2 Medium, 2 Hard)
+- [x] Final score and summary
+- [x] Interviewee tab (chat flow)
+- [x] Interviewer tab (dashboard, search/sort, details)
+- [x] Data persistence (local restore, welcome back modal)
+- [x] Responsive UI, error handling
+
+---
+
+## Attribution
+
+Made by Aryan for Swipe Internship Assignment.
