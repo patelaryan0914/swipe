@@ -121,9 +121,9 @@ export async function aiGenerateQuestion(index: number, candidateInfo: Candidate
 
     let difficulty: "easy" | "medium" | "hard" = "easy";
     let timeLimit = 30;
-    if (index < 2) { difficulty = "easy"; timeLimit = 10; }
-    else if (index < 4) { difficulty = "medium"; timeLimit = 20; }
-    else { difficulty = "hard"; timeLimit = 30; };
+    if (index < 2) { difficulty = "easy"; timeLimit = 20; }
+    else if (index < 4) { difficulty = "medium"; timeLimit = 60; }
+    else { difficulty = "hard"; timeLimit = 120; };
 
     const userQuery = `
       Generate a technical interview question for a Full Stack Developer position (React/Node.js).
