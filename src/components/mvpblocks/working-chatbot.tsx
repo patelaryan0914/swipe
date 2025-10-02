@@ -287,7 +287,8 @@ export default function WorkingChatbot() {
       setIsTimerActive(false);
       handleAutoSubmit();
     }
-  }, [timeRemaining, handleAutoSubmit]);
+  }, [timeRemaining]);
+
   const handleSubmit = useCallback(
     async (e?: React.FormEvent) => {
       e?.preventDefault();
@@ -414,9 +415,6 @@ export default function WorkingChatbot() {
     startTimer(timeLimit);
   };
 
-  const hasAskedRef = useRef(false);
-  const hasQuestionRef = useRef(false);
-
   const askForInfo = async () => {
     setIsGenerating(true);
 
@@ -436,24 +434,27 @@ export default function WorkingChatbot() {
     );
     setIsGenerating(false);
   };
+
+  const askedStateRef = useRef<"idle" | "info" | "question">("idle");
+
   useEffect(() => {
+    if (askedStateRef.current !== "idle") return;
+
     if (
       !candidates[currentId].isProfileComplete &&
       messages[currentId].filter((m) => m.interviewId == ongoingInterviewId)
         .length === 0
     ) {
-      if (!hasAskedRef.current) {
-        hasAskedRef.current = true;
-        askForInfo();
-      }
+      askedStateRef.current = "info";
+      askForInfo();
     } else if (
       messages[currentId].filter((m) => m.interviewId == ongoingInterviewId)
-        .length === 0
+        .length === 0 ||
+      interviews[ongoingInterviewId!].answers.length >=
+        interviews[ongoingInterviewId!].questions.length
     ) {
-      if (!hasQuestionRef.current) {
-        hasQuestionRef.current = true;
-        askQuestion();
-      }
+      askedStateRef.current = "question";
+      askQuestion();
     }
   }, [
     askForInfo,
@@ -462,6 +463,7 @@ export default function WorkingChatbot() {
     currentId,
     messages,
     ongoingInterviewId,
+    interviews,
   ]);
 
   const handleKeyDown = useCallback(
