@@ -476,8 +476,17 @@ export default function WorkingChatbot() {
     [handleSubmit]
   );
 
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    window.scrollTo(0, 0);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, []);
+
   return (
-    <div className="mx-auto flex h-svh w-full max-w-4xl flex-col pb-0.5">
+    <div className="mx-auto flex h-full w-full max-w-4xl flex-col px-4 pt-3 pb-3 sm:px-6">
       <AlertDialog open={showResultDialog}>
         <AlertDialogContent className="max-w-4xl">
           <AlertDialogHeader>
@@ -520,8 +529,8 @@ export default function WorkingChatbot() {
       </AlertDialog>
 
       {!showResultDialog && (
-        <>
-          <div className="border-primary/20 bg-card/40 text-card-foreground h-full flex-1 overflow-y-auto rounded-xl border p-4 text-sm leading-6 shadow-md sm:text-base sm:leading-7">
+        <div className="flex min-h-0 flex-1 flex-col">
+          <div className="border-primary/20 bg-card/40 text-card-foreground min-h-0 flex-1 overflow-y-auto rounded-xl border p-4 text-sm leading-6 shadow-md sm:text-base sm:leading-7">
             {displayMessages.length > 0 ? (
               <>
                 {displayMessages.map((m: Message) => {
@@ -595,13 +604,12 @@ export default function WorkingChatbot() {
             )}
           </div>
 
-          {/* Timer Display */}
-          <div className="mt-2">
+          <div className="bg-background shrink-0 pt-3">
             {isTimerActive && timeRemaining !== null && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-2 flex items-center justify-center"
+                className="mb-3 flex items-center justify-center"
               >
                 <div
                   className={cn(
@@ -609,8 +617,8 @@ export default function WorkingChatbot() {
                     timeRemaining <= 30
                       ? "bg-red-500/10 text-red-600 dark:text-red-400"
                       : timeRemaining <= 60
-                      ? "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400"
-                      : "bg-green-500/10 text-green-600 dark:text-green-400"
+                        ? "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400"
+                        : "bg-green-500/10 text-green-600 dark:text-green-400",
                   )}
                 >
                   <Clock className="h-4 w-4" />
@@ -620,10 +628,7 @@ export default function WorkingChatbot() {
                 </div>
               </motion.div>
             )}
-          </div>
-
-          <form className="mt-2" onSubmit={handleSubmit}>
-            <div className="relative">
+            <form onSubmit={handleSubmit}>
               <AiInput
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
@@ -631,9 +636,9 @@ export default function WorkingChatbot() {
                 onKeyDown={handleKeyDown}
                 disabled={disableInput}
               />
-            </div>
-          </form>
-        </>
+            </form>
+          </div>
+        </div>
       )}
     </div>
   );

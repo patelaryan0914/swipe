@@ -1,6 +1,10 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import { FileUploadComponent } from "./FileUploadComponent";
+import { LandingPage } from "./LandingPage";
 import WorkingChatbot from "./mvpblocks/working-chatbot";
+import { Button } from "@/components/ui/button";
 import {
   setCurrentId,
   startInterview,
@@ -18,9 +22,14 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 
-export default function Interviewee() {
+export default function Interviewee({
+  variant = "simple",
+}: {
+  variant?: "simple" | "landing";
+}) {
   const [showChatbot, setShowChatbot] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
+  const [resumeReady, setResumeReady] = useState(false);
   const dispatch = useAppDispatch();
   const { currentId, ongoingInterviewId, interviews } = useAppSelector(
     (state) => state.candidate
@@ -73,22 +82,42 @@ export default function Interviewee() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      {!showChatbot && !showDialog && (
+      {!showChatbot && variant === "landing" && (
+        <LandingPage
+          onStartInterview={() => {
+            setShowChatbot(true);
+            dispatch(startInterview({ candidateId: currentId }));
+          }}
+        />
+      )}
+      {!showChatbot && !showDialog && variant === "simple" && (
         <>
           <div className="flex justify-center items-center mb-4">
             <h1 className="text-3xl font-bold tracking-tight">
               Start By Uploading Your Resume!
             </h1>
           </div>
-          <FileUploadComponent
-            onStartInterview={() => {
-              setShowChatbot(true);
-              dispatch(startInterview({ candidateId: currentId }));
-            }}
-          />
+          <FileUploadComponent onProfileReady={setResumeReady} />
+          {resumeReady && (
+            <Button
+              type="button"
+              size="lg"
+              className="mt-4 h-11 w-full"
+              onClick={() => {
+                setShowChatbot(true);
+                dispatch(startInterview({ candidateId: currentId }));
+              }}
+            >
+              Start Interview
+            </Button>
+          )}
         </>
       )}
-      {showChatbot && <WorkingChatbot />}
+      {showChatbot && (
+        <div className="bg-background fixed inset-x-0 top-16 bottom-0 z-40">
+          <WorkingChatbot />
+        </div>
+      )}
     </div>
   );
 }

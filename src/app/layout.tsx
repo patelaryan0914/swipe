@@ -15,8 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Swipe Interview Assignment",
-  description: "Made by Aryan",
+  title: "Swipe Your Interview Buddy",
+  description:
+    "Completely free AI interview practice. No sign-up, no auth, and we never store your chats. Upload your resume and continue.",
 };
 
 export default function RootLayout({

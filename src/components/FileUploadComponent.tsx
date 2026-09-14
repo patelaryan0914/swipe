@@ -17,12 +17,12 @@ import {
 import { extractResumeFromFile } from "@/lib/ai";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { addCandidate } from "@/store/candidateSlice";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { fileToBase64 } from "@/lib/helper";
+
 export function FileUploadComponent({
-  onStartInterview,
+  onProfileReady,
 }: {
-  onStartInterview?: () => void;
+  onProfileReady?: (ready: boolean) => void;
 }) {
   const [files, setFiles] = React.useState<File[]>([]);
   const [showInfo, setShowInfo] = React.useState(false);
@@ -46,15 +46,16 @@ export function FileUploadComponent({
           const resumeData = await extractResumeFromFile(
             base64Content,
             file.name,
-            file.type
+            file.type,
           );
           dispatch(
             addCandidate({
               ...resumeData,
-            })
+            }),
           );
           setLoading(false);
           setShowInfo(true);
+          onProfileReady?.(true);
           return resumeData;
         }
       } catch (error) {
@@ -62,7 +63,7 @@ export function FileUploadComponent({
         console.error("Error processing file:", error);
       }
     },
-    [dispatch, files]
+    [dispatch, onProfileReady],
   );
   React.useEffect(() => {
     if (files.length > 0) {
@@ -71,7 +72,7 @@ export function FileUploadComponent({
   }, [files, handleFileProcessing]);
 
   return (
-    <>
+    <div className="flex w-full flex-col gap-4">
       <FileUpload
         value={files}
         onValueChange={setFiles}
@@ -81,81 +82,71 @@ export function FileUploadComponent({
         className="w-full"
         disabled={loading}
       >
-        <>
-          <FileUploadDropzone>
-            <div className="flex flex-col items-center gap-1 text-center">
-              <div className="flex items-center justify-center rounded-full border p-2.5">
-                <Upload className="size-6 text-muted-foreground" />
-              </div>
-              <p className="font-medium text-sm">Drag & drop files here</p>
-              <p className="text-muted-foreground text-xs">
-                Or click to browse
-              </p>
+        <FileUploadDropzone>
+          <div className="flex flex-col items-center gap-1 text-center">
+            <div className="flex items-center justify-center rounded-full border p-2.5">
+              <Upload className="size-6 text-muted-foreground" />
             </div>
-            <FileUploadTrigger asChild>
-              <Button variant="outline" size="sm" className="mt-2 w-fit">
-                Browse files
-              </Button>
-            </FileUploadTrigger>
-          </FileUploadDropzone>
-          <FileUploadList>
-            {files.map((file, index) => (
-              <FileUploadItem key={index} value={file} className="flex-col">
-                <div className="flex w-full items-center gap-2">
-                  <FileUploadItemPreview />
-                  <FileUploadItemMetadata />
-                  <FileUploadItemDelete asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="size-7"
-                      onClick={() => {
-                        setShowInfo(false);
-                      }}
-                      disabled={loading}
-                    >
-                      <X />
-                    </Button>
-                  </FileUploadItemDelete>
-                </div>
-              </FileUploadItem>
-            ))}
-          </FileUploadList>
-        </>
+            <p className="font-medium text-sm">Drag & drop files here</p>
+            <p className="text-muted-foreground text-xs">Or click to browse</p>
+          </div>
+          <FileUploadTrigger asChild>
+            <Button variant="outline" size="sm" className="mt-2 w-fit">
+              Browse files
+            </Button>
+          </FileUploadTrigger>
+        </FileUploadDropzone>
+        <FileUploadList>
+          {files.map((file, index) => (
+            <FileUploadItem key={index} value={file} className="flex-col">
+              <div className="flex w-full items-center gap-2">
+                <FileUploadItemPreview />
+                <FileUploadItemMetadata />
+                <FileUploadItemDelete asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-7"
+                    onClick={() => {
+                      setShowInfo(false);
+                      onProfileReady?.(false);
+                    }}
+                    disabled={loading}
+                  >
+                    <X />
+                  </Button>
+                </FileUploadItemDelete>
+              </div>
+            </FileUploadItem>
+          ))}
+        </FileUploadList>
       </FileUpload>
       {loading && (
-        <div className="mt-4 flex items-center gap-2 text-sm text-gray-600">
-          <Alert variant="default">
-            <Loader2Icon className="h-4 w-4 animate-spin" />
-            <AlertTitle>Processing your resume.</AlertTitle>
-            <AlertDescription>
-              This may take a few moments. Please wait...
-            </AlertDescription>
-          </Alert>
+        <div className="text-muted-foreground flex items-center gap-2 rounded-lg border px-4 py-3 text-sm">
+          <Loader2Icon className="size-4 shrink-0 animate-spin" />
+          Processing your resume. This may take a few moments.
         </div>
       )}
       {showInfo && (
-        <div className="mt-2 w-full flex justify-center">
-          <Alert variant="default" className="max-w-md mt-2 w-full">
-            <User />
-            <AlertTitle>Your Information</AlertTitle>
-            <AlertDescription>
-              Name: {candidates[currentId]?.name || "Not found"}
-              <br />
-              Email: {candidates[currentId]?.email || "Not found"}
-              <br />
-              Phone: {candidates[currentId]?.phone || "Not found"}
-              <br />
-              <p className="text-xs">
-                *Information which is not found will be collected by the bot!
+        <div className="bg-muted/40 w-full rounded-lg border p-4">
+          <div className="flex items-start gap-3">
+            <User className="mt-0.5 size-4 shrink-0" />
+            <div className="min-w-0 flex-1 space-y-2">
+              <p className="font-medium leading-none tracking-tight">
+                Your Information
               </p>
-            </AlertDescription>
-            <Button className="mt-2 min-w-sm" onClick={onStartInterview}>
-              Start Interview
-            </Button>
-          </Alert>
+              <div className="text-muted-foreground space-y-0.5 break-words text-sm">
+                <p>Name: {candidates[currentId]?.name || "Not found"}</p>
+                <p>Email: {candidates[currentId]?.email || "Not found"}</p>
+                <p>Phone: {candidates[currentId]?.phone || "Not found"}</p>
+                <p className="text-xs">
+                  *Information which is not found will be collected by the bot!
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
